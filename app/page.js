@@ -1,9 +1,10 @@
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
+      <main className="flex min-h-screen w-full max-w-3xl flex-col items-start justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
         <Image
           className="dark:invert"
           src="/next.svg"
@@ -58,8 +59,24 @@ export default function Home() {
           >
             Documentation
           </a>
+          <Link href="/about">
+            <button className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-white transition-colors border-1 border-white hover:border-blue-600 hover:text-blue-600">
+              Ke About
+            </button>
+          </Link>
+          <Link href="/berita">
+            <button className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-white transition-colors border-1 border-white hover:border-blue-600 hover:text-blue-600">
+              Ke Berita
+            </button>
+          </Link>
         </div>
       </main>
     </div>
   );
+}
+for (let i = 0; i <= 5; i++) {
+  if (i === 3) {
+    break; // Skip iterasi ketika i adalah 3
+  }
+  console.log(i);
 }
