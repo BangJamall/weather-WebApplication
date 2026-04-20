@@ -277,7 +277,7 @@ useEffect(() => {
           <div className="w-full max-w-xl space-y-5 animate-in fade-in slide-in-from-bottom-4">
             {/* Main Weather Card */}
             <div
-              className={`rounded-3xl ${cardBg} backdrop-blur-xl border p-8`}
+              className={`rounded-3xl ${cardBg} backdrop-blur-xl border p-8 hover:scale-[1.02] hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)] transition-all duration-300 cursor-default`}
             >
               <div className="flex items-center justify-between mb-6">
                 <div>
@@ -322,7 +322,7 @@ useEffect(() => {
     <h3 className={`text-xl font-semibold mb-4 ${textColor}`}>
       Prediksi 5 Hari Kedepan
     </h3>
-    <div className="flex gap-4 overflow-x-auto pb-4 snap-x">
+    <div className="flex gap-4 overflow-x-hidden pt-4 pb-4 px-2 snap-x">
       {forecast.map((day, index) => {
         // Mengubah format tanggal menjadi hari (Senin, Selasa, dll)
         const date = new Date(day.dt * 1000);
@@ -331,7 +331,7 @@ useEffect(() => {
         return (
           <div
             key={index}
-            className={`min-w-[100px] flex-shrink-0 flex flex-col items-center justify-center p-4 rounded-2xl ${cardBg} border snap-center`}
+            className={`min-w-[100px] flex-shrink-0 flex flex-col items-center justify-center p-4 rounded-2xl ${cardBg} border snap-center hover:scale-110 hover:-translate-y-2 hover:bg-white/20 transition-all duration-300 cursor-default`}
           >
             <p className={`${subtextColor} font-medium`}>{dayName}</p>
             <span className="text-4xl my-2 drop-shadow-lg hover:scale-110 transition-transform cursor-pointer">
@@ -351,7 +351,7 @@ useEffect(() => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {/* Humidity */}
               <div
-                className={`rounded-2xl ${cardBg} backdrop-blur-xl border p-5 hover:scale-[1.02] transition-transform`}
+                className={`rounded-2xl ${cardBg} backdrop-blur-xl border p-5 hover:scale-[1.05] hover:-translate-y-1 hover:bg-white/20 hover:shadow-lg transition-all duration-300 cursor-default`}
               >
                 <div className="flex items-center gap-2 mb-3">
                   <svg
@@ -379,7 +379,7 @@ useEffect(() => {
 
               {/* Wind */}
               <div
-                className={`rounded-2xl ${cardBg} backdrop-blur-xl border p-5 hover:scale-[1.02] transition-transform`}
+                className={`rounded-2xl ${cardBg} backdrop-blur-xl border p-5 hover:scale-[1.05] hover:-translate-y-1 hover:bg-white/20 hover:shadow-lg transition-all duration-300 cursor-default`}
               >
                 <div className="flex items-center gap-2 mb-3">
                   <svg
@@ -407,7 +407,7 @@ useEffect(() => {
 
               {/* Pressure */}
               <div
-                className={`rounded-2xl ${cardBg} backdrop-blur-xl border p-5 hover:scale-[1.02] transition-transform`}
+                className={`rounded-2xl ${cardBg} backdrop-blur-xl border p-5 hover:scale-[1.05] hover:-translate-y-1 hover:bg-white/20 hover:shadow-lg transition-all duration-300 cursor-default`}
               >
                 <div className="flex items-center gap-2 mb-3">
                   <svg
@@ -435,7 +435,7 @@ useEffect(() => {
 
               {/* Visibility */}
               <div
-                className={`rounded-2xl ${cardBg} backdrop-blur-xl border p-5 hover:scale-[1.02] transition-transform`}
+                className={`rounded-2xl ${cardBg} backdrop-blur-xl border p-5 hover:scale-[1.05] hover:-translate-y-1 hover:bg-white/20 hover:shadow-lg transition-all duration-300 cursor-default`}
               >
                 <div className="flex items-center gap-2 mb-3">
                   <svg
@@ -469,7 +469,7 @@ useEffect(() => {
 
             {/* Sunrise & Sunset */}
             <div
-              className={`rounded-2xl ${cardBg} backdrop-blur-xl border p-5`}
+              className={`rounded-2xl ${cardBg} backdrop-blur-xl border p-5 hover:scale-[1.02] hover:shadow-lg transition-all duration-300 cursor-default`}
             >
               <div className="flex justify-around items-center">
                 <div className="text-center">
