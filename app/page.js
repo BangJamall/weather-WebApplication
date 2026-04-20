@@ -6,12 +6,44 @@ import Link from "next/link";
 export default function WeatherPage() {
   const [city, setCity] = useState("");
   const [weather, setWeather] = useState(null);
+  const [forecast, setForecast] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const API_KEY = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
 
-    
+    async function fetchWeatherByLocation(lat, lon) {
+    setLoading(true);
+    setError("");
+    setWeather(null);
+
+    try {
+      const res = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=id`
+      );
+
+      if (!res.ok) {
+        throw new Error("Gagal mengambil data cuaca. Coba lagi nanti.");
+      }
+
+      const data = await res.json();
+      const resForecast = await fetch(
+        `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=id`
+      );
+      const dataForecast = await resForecast.json();
+      const dailyData = dataForecast.list.filter((item) =>
+        item.dt_txt.includes("12:00:00")
+      );
+      setForecast(dailyData);
+
+      console.log(data);
+      setWeather(data);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+    }
 
     async function fetchWeatherByCity(namaKota) {
 
@@ -32,6 +64,14 @@ export default function WeatherPage() {
       }
 
       const data = await res.json();
+      const resForecast = await fetch(
+  `https://api.openweathermap.org/data/2.5/forecast?q=${encodeURIComponent(namaKota)}&appid=${API_KEY}&units=metric&lang=id`
+);
+const dataForecast = await resForecast.json();
+const dailyData = dataForecast.list.filter(item => item.dt_txt.includes("12:00:00"));
+setForecast(dailyData);
+
+
       console.log(data);
       setWeather(data);
     } catch (err) {
@@ -41,9 +81,23 @@ export default function WeatherPage() {
     }
   };
 
-  useEffect(() => {
-    fetchWeatherByCity("Makassar");
-  }, []);
+useEffect(() => {
+  if ("geolocation" in navigator) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        // Jika dapet lokasinya, panggil fungsi fetch by location
+        fetchWeatherByLocation(position.coords.latitude, position.coords.longitude);
+      },
+      (err) => {
+        // Kalau user menolak (deny) akses lokasi, atau error
+        // Fallback ke default kota Makassar
+        fetchWeatherByCity("Makassar");
+      }
+    );
+  } else {
+    fetchWeatherByCity("Makassar"); // Browser kuno
+  }
+}, []);
 
   const fetchWeather = (e) => {
   e.preventDefault();
@@ -61,6 +115,17 @@ export default function WeatherPage() {
     if (id === 800) return "from-sky-400 via-blue-500 to-indigo-600";               // Clear
     return "from-slate-600 via-gray-700 to-slate-800";                              // Clouds
   };
+
+    const getCustomWeatherIcon = (id) => {
+    if (id >= 200 && id < 300) return "⛈️"; // Petir / Badai
+    if (id >= 300 && id < 600) return "🌧️"; // Hujan
+    if (id >= 600 && id < 700) return "❄️"; // Salju
+    if (id >= 700 && id < 800) return "🌫️"; // Kabut / Berasap
+    if (id === 800) return "☀️"; // Cerah
+    if (id === 801 || id === 802) return "🌤️"; // Berawan sebagian (cerah)
+    return "☁️"; // Berawan tebal
+  };
+
 
   const isLightBg = () => {
     if (!weather) return false;
@@ -94,28 +159,6 @@ export default function WeatherPage() {
       </div>
 
       <div className="relative z-10 flex flex-col items-center px-4 py-12 min-h-screen">
-        {/* Back button */}
-        <div className="w-full max-w-xl mb-8">
-          <Link
-            href="/"
-            className={`inline-flex items-center gap-2 ${subtextColor} hover:${textColor} transition-colors text-sm group`}
-          >
-            <svg
-              className="w-4 h-4 group-hover:-translate-x-1 transition-transform"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-            Kembali ke Beranda
-          </Link>
-        </div>
 
         {/* Header */}
         <div className="text-center mb-10">
@@ -163,25 +206,28 @@ export default function WeatherPage() {
               className="absolute right-2 h-10 px-6 bg-blue-500 hover:bg-blue-600 active:scale-95 text-white font-semibold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {loading ? (
-                <svg
-                  className="w-5 h-5 animate-spin"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
-                  />
-                </svg>
+                <>
+                  <svg
+                    className="w-5 h-5 animate-spin"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                    />
+                  </svg>
+                  Mencari...
+                </>
               ) : (
                 <>
                   <svg
@@ -236,7 +282,7 @@ export default function WeatherPage() {
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h2
-                    className={`text-3xl font-bold ${textColor} tracking-tight`}
+                    className={`text-base font-bold ${textColor} tracking-tight`}
                   >
                     {weather.name}
                   </h2>
@@ -244,11 +290,9 @@ export default function WeatherPage() {
                     {weather.sys.country}
                   </p>
                 </div>
-                <img
-                  src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@4x.png`}
-                  alt={weather.weather[0].description}
-                  className="w-24 h-24 drop-shadow-2xl"
-                />
+                <div className="text-8xl drop-shadow-2xl animate-pulse">
+                  {getCustomWeatherIcon(weather.weather[0].id)}
+                </div>
               </div>
 
               <div className="flex items-end gap-4 mb-4">
@@ -272,9 +316,39 @@ export default function WeatherPage() {
                 </span>
               </p>
             </div>
+            {/* Prediksi 5 Hari Ke Depan */}
+{forecast && (
+  <div className="mt-6 w-full max-w-xl">
+    <h3 className={`text-xl font-semibold mb-4 ${textColor}`}>
+      Prediksi 5 Hari Kedepan
+    </h3>
+    <div className="flex gap-4 overflow-x-auto pb-4 snap-x">
+      {forecast.map((day, index) => {
+        // Mengubah format tanggal menjadi hari (Senin, Selasa, dll)
+        const date = new Date(day.dt * 1000);
+        const dayName = new Intl.DateTimeFormat("id-ID", { weekday: "short" }).format(date);
+
+        return (
+          <div
+            key={index}
+            className={`min-w-[100px] flex-shrink-0 flex flex-col items-center justify-center p-4 rounded-2xl ${cardBg} border snap-center`}
+          >
+            <p className={`${subtextColor} font-medium`}>{dayName}</p>
+            <span className="text-4xl my-2 drop-shadow-lg hover:scale-110 transition-transform cursor-pointer">
+  {getCustomWeatherIcon(day.weather[0].id)}
+</span>
+            <p className={`${textColor} font-bold text-lg`}>
+              {Math.round(day.main.temp)}°
+            </p>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+)}
 
             {/* Detail Cards Grid */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {/* Humidity */}
               <div
                 className={`rounded-2xl ${cardBg} backdrop-blur-xl border p-5 hover:scale-[1.02] transition-transform`}
@@ -297,7 +371,7 @@ export default function WeatherPage() {
                     Kelembaban
                   </span>
                 </div>
-                <p className={`text-3xl font-bold ${textColor}`}>
+                <p className={`text-base font-bold ${textColor}`}>
                   {weather.main.humidity}
                   <span className="text-lg font-normal">%</span>
                 </p>
@@ -325,7 +399,7 @@ export default function WeatherPage() {
                     Angin
                   </span>
                 </div>
-                <p className={`text-3xl font-bold ${textColor}`}>
+                <p className={`text-base font-bold ${textColor}`}>
                   {weather.wind.speed}
                   <span className="text-lg font-normal"> m/s</span>
                 </p>
@@ -353,7 +427,7 @@ export default function WeatherPage() {
                     Tekanan Udara
                   </span>
                 </div>
-                <p className={`text-3xl font-bold ${textColor}`}>
+                <p className={`text-base font-bold ${textColor}`}>
                   {weather.main.pressure}
                   <span className="text-lg font-normal"> hPa</span>
                 </p>
@@ -386,7 +460,7 @@ export default function WeatherPage() {
                     Jarak Pandang
                   </span>
                 </div>
-                <p className={`text-3xl font-bold ${textColor}`}>
+                <p className={`text-base font-bold ${textColor}`}>
                   {(weather.visibility / 1000).toFixed(1)}
                   <span className="text-lg font-normal"> km</span>
                 </p>
@@ -465,7 +539,3 @@ export default function WeatherPage() {
     </div>
   );
 }
-console.log(typeof false)
-const number = [1,2,3]
-const [first, ...rest] = number
-console.log(rest)
