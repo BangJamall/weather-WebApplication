@@ -322,7 +322,7 @@ useEffect(() => {
     <h3 className={`text-xl font-semibold mb-4 ${textColor}`}>
       Prediksi 5 Hari Kedepan
     </h3>
-    <div className="flex gap-4 overflow-x-hidden pt-4 pb-4 px-2 snap-x">
+    <div className="flex gap-4 overflow-x-auto pt-4 pb-4 px-2 snap-x [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
       {forecast.map((day, index) => {
         // Mengubah format tanggal menjadi hari (Senin, Selasa, dll)
         const date = new Date(day.dt * 1000);
